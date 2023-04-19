@@ -39,7 +39,7 @@ if __name__ == '__main__':
     if lang == 'java':
         categories = 5
     print("Train for ", str.upper(lang))
-    train_data = pd.read_pickle(root+lang+'/train/blocks.pkl').sample(frac=100)
+    train_data = pd.read_pickle(root+lang+'/train/blocks.pkl').sample(frac=1)
     #test_data = train_data.sample(frac=1)
     test_data = pd.read_pickle(root+lang+'/test/blocks.pkl').sample(frac=1)
 
