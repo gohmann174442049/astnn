@@ -39,7 +39,8 @@ if __name__ == '__main__':
     if lang == 'java':
         categories = 5
     print("Train for ", str.upper(lang))
-    train_data = pd.read_pickle(root+lang+'/train/blocks.pkl').sample(frac=1)
+    train_data = pd.read_pickle(root+lang+'/train/blocks.pkl').sample(frac=100)
+    #test_data = train_data.sample(frac=1)
     test_data = pd.read_pickle(root+lang+'/test/blocks.pkl').sample(frac=1)
 
     word2vec = Word2Vec.load(root+lang+"/train/embedding/node_w2v_128").wv
@@ -68,17 +69,16 @@ if __name__ == '__main__':
     precision, recall, f1 = 0, 0, 0
     print('Start training...')
     #for t in range(1, categories+1):
-    for t in range(5, 6):
-        if lang == 'java':
-            train_data_t = train_data[train_data['label'].isin([t, 0])]
-            train_data_t.loc[train_data_t['label'] > 0, 'label'] = 1
+    for t in range(1, categories+1):
+        # subset the data to train for each given type on bigclonebench
+        train_data_t = train_data[train_data['label'].isin([t, 0])]
+        train_data_t.loc[train_data_t['label'] > 0, 'label'] = 1
 
-            test_data_t = test_data[test_data['label'].isin([t, 0])]
-            test_data_t.loc[test_data_t['label'] > 0, 'label'] = 1
-        else:
-            train_data_t, test_data_t = train_data, test_data
+        test_data_t = test_data[test_data['label'].isin([t, 0])]
+        test_data_t.loc[test_data_t['label'] > 0, 'label'] = 1
+
         print("test Data Type")
-        print(type(test_data))
+        #print(type(test_data))
         # training procedure
         for epoch in range(EPOCHS):
             start_time = time.time()
@@ -130,7 +130,17 @@ if __name__ == '__main__':
             trues.extend(test_labels.cpu().numpy())
             total += len(test_labels)
             total_loss += loss.item() * len(test_labels)
-
+        assert len(test_data_t)==len(predicts)
+        idPairs=[]
+        count=0
+        for row in test_data_t.itertuples():
+            if predicts[count]==True:
+                idPairs.append([str(row[1]), str(row[2])])
+            count+=1
+        with open("sampleOutput\\type_"+str(t)+".csv", 'w') as file:
+            for pair in idPairs:
+                file.write(",".join(pair))
+                file.write('\n')
         weights = [0, 0.005, 0.001, 0.002, 0.010, 0.982]
         p, r, f, _ = precision_recall_fscore_support(trues, predicts, average='binary')
         precision += weights[t] * p
