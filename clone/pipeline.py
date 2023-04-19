@@ -194,7 +194,7 @@ class Pipeline:
         df.drop(['id_x', 'id_y'], axis=1, inplace=True)
         df.dropna(inplace=True)
 
-        df.to_pickle(self.root+self.language+'/'+part+'/blocks.pkl')
+        df.to_pickle(self.root+'/'+self.language+'/'+part+'/blocks.pkl')
 
     # run for processing data to train
     def run(self):

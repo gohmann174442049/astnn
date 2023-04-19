@@ -21,6 +21,7 @@ def get_batch(dataset, idx, bs):
 
 
 if __name__ == '__main__':
+    '''
     import argparse
 
     parser = argparse.ArgumentParser(description="Choose a dataset:[c|java]")
@@ -32,6 +33,9 @@ if __name__ == '__main__':
     root = 'data/'
     lang = args.lang
     categories = 1
+    '''
+    root = 'data/'
+    lang='java'
     if lang == 'java':
         categories = 5
     print("Train for ", str.upper(lang))
@@ -63,7 +67,8 @@ if __name__ == '__main__':
     print(train_data)
     precision, recall, f1 = 0, 0, 0
     print('Start training...')
-    for t in range(1, categories+1):
+    #for t in range(1, categories+1):
+    for t in range(5, 6):
         if lang == 'java':
             train_data_t = train_data[train_data['label'].isin([t, 0])]
             train_data_t.loc[train_data_t['label'] > 0, 'label'] = 1
@@ -72,6 +77,8 @@ if __name__ == '__main__':
             test_data_t.loc[test_data_t['label'] > 0, 'label'] = 1
         else:
             train_data_t, test_data_t = train_data, test_data
+        print("test Data Type")
+        print(type(test_data))
         # training procedure
         for epoch in range(EPOCHS):
             start_time = time.time()
@@ -117,18 +124,18 @@ if __name__ == '__main__':
 
             # calc testing acc
             predicted = (output.data > 0.5).cpu().numpy()
+            #notEncodedData= (output.data > 0.5)   
             predicts.extend(predicted)
+            #print(notEncodedData)
             trues.extend(test_labels.cpu().numpy())
             total += len(test_labels)
             total_loss += loss.item() * len(test_labels)
-        if lang == 'java':
-            weights = [0, 0.005, 0.001, 0.002, 0.010, 0.982]
-            p, r, f, _ = precision_recall_fscore_support(trues, predicts, average='binary')
-            precision += weights[t] * p
-            recall += weights[t] * r
-            f1 += weights[t] * f
-            print("Type-" + str(t) + ": " + str(p) + " " + str(r) + " " + str(f))
-        else:
-            precision, recall, f1, _ = precision_recall_fscore_support(trues, predicts, average='binary')
+
+        weights = [0, 0.005, 0.001, 0.002, 0.010, 0.982]
+        p, r, f, _ = precision_recall_fscore_support(trues, predicts, average='binary')
+        precision += weights[t] * p
+        recall += weights[t] * r
+        f1 += weights[t] * f
+        print("Type-" + str(t) + ": " + str(p) + " " + str(r) + " " + str(f))
 
     print("Total testing results(P,R,F1):%.3f, %.3f, %.3f" % (precision, recall, f1))
