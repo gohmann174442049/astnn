@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import sys
 import javalang
 generatePairs=True
-
+offset=23677151
 def replace_last(source_string, replace_what, replace_with):
     head, _sep, tail = source_string.rpartition(replace_what)
     return head + replace_with + tail
@@ -17,6 +17,7 @@ def parse_program(func):
 idArray=[]
 tree= ET.parse("Java_Repos_sample_esc.xml")
 root= tree.getroot()
+baseOffset=23677151+1
 id_func=23677151+1
 for i in root.getchildren():
     i.attrib.update({"id": str(id_func)})
@@ -80,7 +81,7 @@ pairs=list(it.combinations(range(n),2))
 print(len(pairs))
 print("writing...")
 with open("possiblePairs.csv", 'w') as outputPairs:
-    outputPairs.write("id1,id2,label")
+    outputPairs.write(" ,id1,id2,label")
     outputPairs.write('\n')
     index=0
     for i in pairs:
@@ -88,5 +89,5 @@ with open("possiblePairs.csv", 'w') as outputPairs:
         if index % 1000000==0:
             print(index)
         pair=list(i)
-        outputPairs.write(str(pair[0])+","+str(pair[1])+",0")
+        outputPairs.write(str(index-1)+","+str(baseOffset+pair[0])+","+str(baseOffset+pair[1])+",0")
         outputPairs.write('\n')
