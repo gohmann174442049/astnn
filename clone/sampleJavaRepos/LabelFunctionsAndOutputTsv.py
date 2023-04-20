@@ -24,7 +24,8 @@ with open("sample_funcs_all.tsv", 'w', encoding='latin-1') as outputFile:
         try:
             if func[1].count('\n') >= 10:
                 success+=1
-                outputFile.write(func[0]+'\t'+"\""+ func[1].replace("\"","\"\"")+"\"")
+                outputFile.write(func[0]+'\t'+"\""+ func[1]
+                                 .replace("\"","\"\"").replace('\n',"\n\t")+"\"")
                 outputFile.write('\n')
         except:
             #invalid char present
