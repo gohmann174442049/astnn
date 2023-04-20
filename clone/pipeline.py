@@ -200,7 +200,7 @@ class Pipeline:
     def run(self):
         print('parse source code...')
         input_file = (
-            #'programs.pkl' if self.language == 'c' else 'bcb_funcs_all.tsv'
+            #'programs.pkl' if self.language == 'c' else 'BCBInput/bcb_funcs_all.tsv'
             'programs.pkl' if self.language == 'c' else 'sample_funcs_all.tsv'
         )
         if os.path.exists(os.path.join(self.root, self.language, 'ast.pkl')):
@@ -213,7 +213,7 @@ class Pipeline:
         if self.language == 'c':
             self.read_pairs('oj_clone_ids.pkl')
         else:
-            self.read_pairs('sample_funcs_all.pkl')
+            self.read_pairs('possiblePairs_ids_sample.pkl')
         print('split data...')
         self.split_data()
         print('train word embedding...')
@@ -226,10 +226,11 @@ class Pipeline:
         self.merge(self.test_file_path, 'test')
 
 
-@click.command()
-@click.option('--lang', required=True, type=str,
-              help="Language for the code input ('c' or 'java')")
-def main(lang):
+#@click.command()
+#@click.option('--lang', required=True, type=str,
+#              help="Language for the code input ('c' or 'java')")
+def main():
+    lang = 'java'
     ppl = Pipeline('3:1:1', 'data', str(lang))
     ppl.run()
 
