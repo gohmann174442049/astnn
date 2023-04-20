@@ -21,4 +21,8 @@ with open(r"..\data\java\bcb_funcs_all.tsv", 'r', encoding='latin-1') as inputFi
         #print(i[1][1:10])
         rows.append(i)
 #data = pandas.read_csv(r"..\data\java\bcb_funcs_all.tsv")
-print(len(rows))
+maxInt=-1
+for i in rows:
+    if int(i[0]) > maxInt:
+        maxInt=int(i[0])
+print(maxInt)
