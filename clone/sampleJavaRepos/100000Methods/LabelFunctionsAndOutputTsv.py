@@ -77,7 +77,7 @@ print(len(possiblePairs))
 '''
 import itertools as it
 n= len(idArray)
-pairs=list(it.combinations(range(n),2))
+pairs=list(it.combinations(idArray,2))
 print(len(pairs))
 print("writing...")
 with open("possiblePairs.csv", 'w') as outputPairs:
@@ -89,5 +89,5 @@ with open("possiblePairs.csv", 'w') as outputPairs:
         if index % 1000000==0:
             print(index)
         pair=list(i)
-        outputPairs.write(str(index-1)+","+str(baseOffset+pair[0])+","+str(baseOffset+pair[1])+",0")
+        outputPairs.write(str(index-1)+","+str(pair[0])+","+str(pair[1])+",0")
         outputPairs.write('\n')
