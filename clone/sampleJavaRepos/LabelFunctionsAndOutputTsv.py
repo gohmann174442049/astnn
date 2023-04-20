@@ -14,5 +14,21 @@ for i in root.getchildren():
     body= i.text
     tsvArray.append([currId, body])
 
-for i in range(0, 10):
-    print(tsvArray[i])
+#for i in range(0, 10):
+#    print(tsvArray[i])
+success=0
+failed=0
+with open("sample_funcs_all.tsv", 'w', encoding='latin-1') as outputFile:
+    for func in tsvArray:
+        #print(func)
+        try:
+            if func[1].count('\n') >= 10:
+                success+=1
+                outputFile.write(func[0]+'\t'+"\""+ func[1].replace("\"","\"\"")+"\"")
+                outputFile.write('\n')
+        except:
+            #invalid char present
+            failed+=1
+            pass
+print(success)
+print(failed)
