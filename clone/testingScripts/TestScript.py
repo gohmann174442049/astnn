@@ -10,9 +10,13 @@ from sklearn.metrics import precision_recall_fscore_support
 
 root = '../data/'
 lang='java'
-if lang == 'java':
-    categories = 5
+originalPairData=pd.read_pickle(r"..\data\java\bcb_pair_ids.pkl")
+
+
+
 print("Train for ", str.upper(lang))
 full_data= pd.read_pickle(root+lang+'/train/blocks.pkl')
 train_data = full_data.sample(frac=1)
 test_data = full_data.sample(frac=1)
+
+
