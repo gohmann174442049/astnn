@@ -1,14 +1,14 @@
 import pandas as pd
-import torch
+#import torch
 import time
 import numpy as np
 import warnings
 from gensim.models.word2vec import Word2Vec
-from model import BatchProgramCC
-from torch.autograd import Variable
+#from model import BatchProgramCC
+#from torch.autograd import Variable
 from sklearn.metrics import precision_recall_fscore_support
 
-root = 'data/'
+root = '../data/'
 lang='java'
 if lang == 'java':
     categories = 5
