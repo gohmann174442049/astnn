@@ -201,7 +201,7 @@ class Pipeline:
         print('parse source code...')
         input_file = (
             #'programs.pkl' if self.language == 'c' else 'BCBInput/bcb_funcs_all.tsv'
-            'programs.pkl' if self.language == 'c' else 'sample_funcs_all.tsv'
+            'programs.pkl' if self.language == 'c' else 'merged_dataset_funcs_all.tsv'
         )
         if os.path.exists(os.path.join(self.root, self.language, 'ast.pkl')):
             print('a')
