@@ -1,4 +1,4 @@
 import pandas as pd
 
 data= pd.read_csv("possiblePairs.csv")
-data.to_pickle("possiblePairs_ids.pkl")
+data.to_pickle("possiblePairs_ids_sample.pkl")
