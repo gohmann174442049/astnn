@@ -1,11 +1,19 @@
 import xml.etree.ElementTree as ET
 import sys
-
-generatePairs=False
+import javalang
+generatePairs=True
 
 def replace_last(source_string, replace_what, replace_with):
     head, _sep, tail = source_string.rpartition(replace_what)
     return head + replace_with + tail
+
+
+def parse_program(func):
+    tokens = javalang.tokenizer.tokenize(func)
+    parser = javalang.parser.Parser(tokens)
+    tree = parser.parse_member_declaration()
+
+
 idArray=[]
 tree= ET.parse("Java_Repos_sample_esc.xml")
 root= tree.getroot()
@@ -25,19 +33,29 @@ for i in root.getchildren():
 #    print(tsvArray[i])
 success=0
 failed=0
+failedParse=0
 with open("sample_funcs_all.tsv", 'w', encoding='utf-8') as outputFile:
+    index=0
     for func in tsvArray:
-        #print(func)
+        if index % 1000 ==0:
+            print(index)
+        index+=1
         try:
             if func[1].count('\n') >= 10:
+                formattedFun=func[1].replace("\"","\"\"")
+                ### ensure it is possible to parse the function
+                ### before adding it to the dataset
+                try:
+                    parse_program(formattedFun)
+                except:
+                    failedParse+=1
+                    continue
                 success+=1
                 idArray.append(int(func[0]))
-                formattedFun=func[1].replace("\"","\"\"")
                 formattedFun=replace_last(formattedFun, '\t', '')
                 outputFile.write(func[0]+'\t'+"\""+ formattedFun+"\"")
                 outputFile.write('\n')
         except Exception as e:
-            #print(e)
             #invalid char present
             failed+=1
             pass
