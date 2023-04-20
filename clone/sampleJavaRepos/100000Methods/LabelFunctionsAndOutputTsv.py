@@ -63,7 +63,7 @@ with open("possiblePairs.csv", 'w') as outputPairs:
     index=0
     for i in pairs:
         index+=1
-        if index % 100000==0:
+        if index % 1000000==0:
             print(index)
         pair=list(i)
         outputPairs.write(str(pair[0])+","+str(pair[1])+",0")

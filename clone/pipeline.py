@@ -200,7 +200,8 @@ class Pipeline:
     def run(self):
         print('parse source code...')
         input_file = (
-            'programs.pkl' if self.language == 'c' else 'bcb_funcs_all.tsv'
+            #'programs.pkl' if self.language == 'c' else 'bcb_funcs_all.tsv'
+            'programs.pkl' if self.language == 'c' else 'sample_funcs_all.tsv'
         )
         if os.path.exists(os.path.join(self.root, self.language, 'ast.pkl')):
             print('a')
@@ -212,7 +213,7 @@ class Pipeline:
         if self.language == 'c':
             self.read_pairs('oj_clone_ids.pkl')
         else:
-            self.read_pairs('bcb_pair_ids.pkl')
+            self.read_pairs('sample_funcs_all.pkl')
         print('split data...')
         self.split_data()
         print('train word embedding...')
