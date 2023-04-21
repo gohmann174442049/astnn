@@ -23,7 +23,7 @@ for i in root.getchildren():
     i.attrib.update({"id": str(id_func)})
     #idArray.append(id_func)
     id_func+=1
-
+tree.write("Java_Repos_sample_esc_ID.xml")
 tsvArray=[]
 for i in root.getchildren():
     currId=i.attrib['id']
