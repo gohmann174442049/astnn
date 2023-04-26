@@ -39,10 +39,10 @@ if __name__ == '__main__':
     if lang == 'java':
         categories = 5
     print("Train for ", str.upper(lang))
-    train_data = pd.read_pickle(root+lang+'/test/BCB_Blocks/blocks.pkl').sample(frac=1)
-    #test_data = train_data.sample(frac=1)
-    test_data = pd.read_pickle(root+lang+'/test/blocks.pkl').sample(frac=1)
+    #train_data = pd.read_pickle(root+lang+'/test/BCB_Blocks/blocks.pkl').sample(frac=1)
+    train_data = pd.read_pickle(root+lang+'/train/blocks.pkl').sample(frac=1)
 
+    test_data = pd.read_pickle(root+lang+'/test/blocks.pkl').sample(n=1000000)
     word2vec = Word2Vec.load(root+lang+"/train/embedding/node_w2v_128").wv
     MAX_TOKENS = word2vec.syn0.shape[0]
     EMBEDDING_DIM = word2vec.syn0.shape[1]
@@ -73,8 +73,10 @@ if __name__ == '__main__':
         # subset the data to train for each given type on bigclonebench
         train_data_t = train_data[train_data['label'].isin([t, 0])]
         train_data_t.loc[train_data_t['label'] > 0, 'label'] = 1
-
-        test_data_t = test_data[test_data['label'].isin([t, 0])]
+        
+        #only test the unknown data
+        test_data_t = test_data[test_data['label'].isin([-1])]
+        #test_data_t = test_data[test_data['label'].isin([t, 0])]
         test_data_t.loc[test_data_t['label'] > 0, 'label'] = 1
 
         print("test Data Type")
@@ -87,7 +89,9 @@ if __name__ == '__main__':
             total_loss = 0.0
             total = 0.0
             i = 0
+            print(len(train_data_t))
             while i < len(train_data_t):
+                #print(str(i)+ " of "+ str(len(train_data_t)))
                 batch = get_batch(train_data_t, i, BATCH_SIZE)
                 i += BATCH_SIZE
                 train1_inputs, train2_inputs, train_labels = batch
@@ -110,6 +114,7 @@ if __name__ == '__main__':
         total = 0.0
         i = 0
         while i < len(test_data_t):
+            print(i, len(test_data))
             batch = get_batch(test_data_t, i, BATCH_SIZE)
             i += BATCH_SIZE
             test1_inputs, test2_inputs, test_labels = batch
@@ -141,11 +146,14 @@ if __name__ == '__main__':
             for pair in idPairs:
                 file.write(",".join(pair))
                 file.write('\n')
+        '''
         weights = [0, 0.005, 0.001, 0.002, 0.010, 0.982]
         p, r, f, _ = precision_recall_fscore_support(trues, predicts, average='binary')
         precision += weights[t] * p
         recall += weights[t] * r
         f1 += weights[t] * f
         print("Type-" + str(t) + ": " + str(p) + " " + str(r) + " " + str(f))
+        '''
 
-    print("Total testing results(P,R,F1):%.3f, %.3f, %.3f" % (precision, recall, f1))
+    #print("Total testing results(P,R,F1):%.3f, %.3f, %.3f" % (precision, recall, f1))
+    print("finished YAY!")
