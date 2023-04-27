@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from xml import etree
 import sys
 import javalang
 generatePairs=False
@@ -15,10 +16,12 @@ def parse_program(func):
 
 
 idArray=[]
-tree= ET.parse("Java_Repos_esc.xml")
+tree= ET.parse("Java_Repos_esc.xml", parser= ET.XMLParser(encoding='latin-1'))
+#tree= ET.parse("Java_Repos_esc.xml")
 root= tree.getroot()
 baseOffset=23677151+1
 id_func=23677151+1
+print("successfully read in xml!")
 for i in root.getchildren():
     i.attrib.update({"id": str(id_func)})
     #idArray.append(id_func)
@@ -62,7 +65,7 @@ with open("sample_funcs_all.tsv", 'w', encoding='utf-8') as outputFile:
             pass
 print(success)
 print(failed)
-
+print(failedParse)
 possiblePairs=[]
 print(len(idArray))
 if generatePairs==False:
