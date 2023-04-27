@@ -14,7 +14,9 @@ def SetFieldSizeLimit():
         except OverflowError:
             maxInt = int(maxInt/10)
 SetFieldSizeLimit()
-with open("type_1.csv", 'r') as file:
+#inputPath="Type1ClonesBetterAt90Threshold/type_1.csv"
+inputPath="type_1.csv"
+with open(inputPath, 'r') as file:
     data=file.readlines()
     print(len(data))
     for i in data:
@@ -34,19 +36,19 @@ truePositive=0
 falsePositive=0
 counter=0
 for pair in pairRows:
-    if counter % 10000==0:
+    if counter % 100==0:
         print(counter)
     counter+=1
     splitPair=pair.split(",")
     function1=None
     function2=None
     for check in functionRows:
-        if(function1 != None and function2 != None):
-            break
         if int(check[0]) == int(splitPair[0]):
             function1=check[1]
         if int(check[0]) == int(splitPair[1]):
             function2=check[1]
+        if(function1 != None and function2 != None):
+            break
     else:
         raise Warning("not found!")
     if function1 == function2:
