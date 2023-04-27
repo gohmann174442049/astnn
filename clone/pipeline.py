@@ -85,15 +85,26 @@ class Pipeline:
     def split_data(self):
         data_path = self.root+'/'+self.language+'/'
         data = self.pairs
+        '''
+        splits the data up by 60%, 20%, and 20%
         data_num = len(data)
         ratios = [int(r) for r in self.ratio.split(':')]
         train_split = int(ratios[0]/sum(ratios)*data_num)
         val_split = train_split + int(ratios[1]/sum(ratios)*data_num)
-
+        
         data = data.sample(frac=1, random_state=666)
         train = data.iloc[:train_split]
         dev = data.iloc[train_split:val_split]
         test = data.iloc[val_split:]
+        '''
+        data = data.sample(frac=1, random_state=666)
+        trainingData=data[data['label'].isin([5 ,4 ,3 ,2 ,1 ,0])]
+        training_dev_data_num = len(trainingData)
+        trainingAmount=int(training_dev_data_num*.8)
+        # 80% use for training, 20% use for fine tuning
+        train = data[data['label'].isin([5 ,4 ,3 ,2 ,1 ,0])].iloc[:trainingAmount]
+        dev= data[data['label'].isin([5 ,4 ,3 ,2 ,1 ,0])].iloc[trainingAmount:]
+        test =  data[data['label'].isin([-1])]
 
         def check_or_create(path):
             if not os.path.exists(path):
