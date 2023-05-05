@@ -8,22 +8,23 @@
 #include <limits>
 #include <chrono>
 using namespace std;
-vector<int> ReadFile(string Path);
+vector<int> ReadIdFile(string Path);
 void GenerateClonePairs(vector<int> functionIDs);
 void WriteToCSV(const vector<std::pair<int, int>>& pairs);
 std::vector<int> getRandomSample(const vector<int>& inputVector, size_t sampleSize);
 int main(){
 	//std::cout << "It works!" << std::endl;
-	vector<int> outputVec=ReadFile("MethodsContainingTypes1_3.csv");
+	vector<int> outputVec=ReadIdFile("MethodsContainingTypes1_3.csv");
+	vector<pair<int, int>> knownPairs = ReadBCBFile();
 	std::cout << "There are a total of: " << outputVec.size() << " functions" << std::endl; 
 	auto startTime = chrono::high_resolution_clock::now();
-	GenerateClonePairs(outputVec);
+	GenerateClonePairs(outputVec, knownPairs);
 	auto endTime=chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 	std::cout << "Execution time: " << duration.count() << " milliseconds" << std::endl;
 	return 0;
 }
-void GenerateClonePairs(vector<int> functionIDs){
+void GenerateClonePairs(vector<int> functionIDs, vector<pair<int, int>> knownPairs){
 	vector<int> sampleFuncIDs = functionIDs;
 	int myVecSize= sampleFuncIDs.size();
 	std::vector<std::pair<int, int>> pairs;
@@ -38,12 +39,22 @@ void GenerateClonePairs(vector<int> functionIDs){
 			std::cout << myVecSize << std::endl;
 		}
 		for(int j = i+1; j < myVecSize; j++){
-			pairs.emplace_back(sampleFuncIDs[i], sampleFuncIDs[j]);
+			if (!CheckIfKnownPair(sampleFuncIDs, i, j, knownPairs)) {
+				pairs.emplace_back(sampleFuncIDs[i], sampleFuncIDs[j]);
+			}
 		}
 	}
 
 	WriteToCSV(pairs);
 
+}
+bool CheckIfKnownPair(vector<int> samplefuncIDs, int i, int j, vector<pair<int, int>> knownPairs) {
+	for (vector<pair<int, int>> pair : knownPairs) {
+		if ((pair.first == samplefuncIDs[i] && pair.second == samplefuncIDs[j]) || (pair.second == samplefuncIDs[i] && pair.first == samplefuncIDs[j])) {
+			return true;
+		}
+	}
+	return false;
 }
 void WriteToCSV(const vector<std::pair<int, int>>& pairs){
 	string filename= "OutputExtraNonPairs.csv";
@@ -61,7 +72,7 @@ void WriteToCSV(const vector<std::pair<int, int>>& pairs){
 	file.close();
 }
 
-vector<int> ReadFile(string path){
+vector<int> ReadIdFile(string path){
 	ifstream file(path);
 	if(!file){
 		std::cerr << "Failed!" << std::endl;
@@ -76,6 +87,44 @@ vector<int> ReadFile(string path){
 	file.close();
 	return numbers;
 }
+vector<pair<int, int>> ReadBCBFile() {
+	ifstream file("bcb_clonePairs.csv"); // Replace "data.csv" with your CSV file path
+
+	if (!file) {
+		scout << "Failed to open the file." << endl;
+		return 1;
+	}
+
+	vector<pair<int, int>> numberPairs; // Vector to store the number pairs
+
+	string line;
+	bool isFirstLine = true; // Flag to track the first line
+
+
+	while (getline(file, line)) {
+		if (isFirstLine) {
+			isFirstLine = false;
+			continue;
+		}
+		
+		stringstream ss(line);
+		string token;
+
+		while (getline(ss, token, ',')) { // Assuming comma-separated values
+			int num1, num2;
+			istringstream(token) >> num1;
+
+			if (getline(ss, token, ',')) {
+				istringstream(token) >> num2;
+				numberPairs.emplace_back(num1, num2);
+			}
+			else {
+				cout << "Invalid number pair format in the CSV file." << endl;
+				break;
+			}
+		}
+	}
+/*
 vector<int> getRandomSample(const std::vector<int>& inputVector, size_t sampleSize) {
 	if (sampleSize >= inputVector.size()) {
 		return inputVector;
@@ -92,3 +141,4 @@ vector<int> getRandomSample(const std::vector<int>& inputVector, size_t sampleSi
 	
 	return sample;
 }
+*/
