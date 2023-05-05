@@ -9,9 +9,11 @@
 #include <chrono>
 using namespace std;
 vector<int> ReadIdFile(string Path);
-void GenerateClonePairs(vector<int> functionIDs);
+void GenerateClonePairs(vector<int> functionIDs, vector<pair<int, int>> knownPairs);
 void WriteToCSV(const vector<std::pair<int, int>>& pairs);
 std::vector<int> getRandomSample(const vector<int>& inputVector, size_t sampleSize);
+bool CheckIfKnownPair(vector<int> samplefuncIDs, int i, int j, vector<pair<int, int>> knownPairs);
+vector<pair<int, int>> ReadBCBFile();
 int main(){
 	//std::cout << "It works!" << std::endl;
 	vector<int> outputVec=ReadIdFile("MethodsContainingTypes1_3.csv");
@@ -33,7 +35,7 @@ void GenerateClonePairs(vector<int> functionIDs, vector<pair<int, int>> knownPai
 	pairs.reserve(myVecSize * (myVecSize - 1) / 2);  // Reserve memory for all pairs
 	std::cout << "start..." << std::endl;
 	for (int i =0; i < myVecSize; i++){
-		if(i % 10000 == 0 ){
+		if(i % 1 == 0 ){
 			std::cout << i;
 			std::cout << " out of ";
 			std::cout << myVecSize << std::endl;
@@ -49,7 +51,7 @@ void GenerateClonePairs(vector<int> functionIDs, vector<pair<int, int>> knownPai
 
 }
 bool CheckIfKnownPair(vector<int> samplefuncIDs, int i, int j, vector<pair<int, int>> knownPairs) {
-	for (vector<pair<int, int>> pair : knownPairs) {
+	for (pair<int, int> pair : knownPairs) {
 		if ((pair.first == samplefuncIDs[i] && pair.second == samplefuncIDs[j]) || (pair.second == samplefuncIDs[i] && pair.first == samplefuncIDs[j])) {
 			return true;
 		}
@@ -91,8 +93,7 @@ vector<pair<int, int>> ReadBCBFile() {
 	ifstream file("bcb_clonePairs.csv"); // Replace "data.csv" with your CSV file path
 
 	if (!file) {
-		scout << "Failed to open the file." << endl;
-		return 1;
+		cout << "Failed to open the file." << endl;
 	}
 
 	vector<pair<int, int>> numberPairs; // Vector to store the number pairs
@@ -124,6 +125,8 @@ vector<pair<int, int>> ReadBCBFile() {
 			}
 		}
 	}
+	return numberPairs;
+}
 /*
 vector<int> getRandomSample(const std::vector<int>& inputVector, size_t sampleSize) {
 	if (sampleSize >= inputVector.size()) {
