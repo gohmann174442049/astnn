@@ -32,9 +32,10 @@ with open(r"bcb_clonePairs.csv", 'r', encoding='utf-8') as inputFile:
 for i in range(0, 10):
     print(originalPairs[-i])
 import itertools as it
-newPairs=list(it.combinations(ids,2))
+newPairs=list(it.combinations(ids[:500],2))
 print(len(newPairs))
 #1:3
+print("generating pairs...")
 combinePairs=[]
 for pair in originalPairs:
     combinePairs.append(pair)
@@ -42,10 +43,9 @@ lastIndex=97534 + 1
 counter=0
 print("start gnerating new Pairs")
 for newPair in newPairs:
-    #if counter % 100 == 0:
-    #    print("count", str(counter), str(len(newPairs)))
+    if counter % 500 == 0:
+        print("count", str(counter), str(len(newPairs)))
     counter+=1
-    print("count", str(counter), str(len(newPairs)))
     for checkPair in combinePairs:
         if ((int(checkPair[1]) == int(newPair[0]) and int(checkPair[2]) == int(newPair[1])) or
             (int(checkPair[1]) == int(newPair[1]) and int(checkPair[2]) == int(newPair[0]))):

@@ -21,7 +21,10 @@ with open("OutputExtraNonPairs.csv", 'r') as extrasFile:
         if index ==0:
             index+=1
             continue
+        if index > 400000:
+            break
         outputExtraNonPairs.append(i)
+        index+=1
 print("----")
 for i in range(0, 10):
     print(outputExtraNonPairs[i])
