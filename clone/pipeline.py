@@ -97,13 +97,18 @@ class Pipeline:
         dev = data.iloc[train_split:val_split]
         test = data.iloc[val_split:]
         '''
-        data = data.sample(frac=1, random_state=666)
+        
+        #data = data.sample(frac=1, random_state=666)
+        #data = data
         trainingData=data[data['label'].isin([5 ,4 ,3 ,2 ,1 ,0])]
-        training_dev_data_num = len(trainingData)
-        trainingAmount=int(training_dev_data_num*.8)
+        #training_dev_data_num = len(trainingData)
+        trainingAmount=int(len(trainingData)*.8)
         # 80% use for training, 20% use for fine tuning
+        print("train")
         train = data[data['label'].isin([5 ,4 ,3 ,2 ,1 ,0])].iloc[:trainingAmount]
+        print("dev")
         dev= data[data['label'].isin([5 ,4 ,3 ,2 ,1 ,0])].iloc[trainingAmount:]
+        print("label")
         test =  data[data['label'].isin([-1])]
 
         def check_or_create(path):
