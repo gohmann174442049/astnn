@@ -3,7 +3,7 @@ import random
 header=None
 nonPairRows=[]
 rows=[]
-with open("mergedBCBOutputNonPairs.csv", 'r') as file:
+with open("mergedBCBOutputNonPairs_mTraining.csv", 'r') as file:
     data=csv.reader(file)
     index = 0
     for i in data:
@@ -11,7 +11,9 @@ with open("mergedBCBOutputNonPairs.csv", 'r') as file:
             index+=1
             header=i
             continue
-        if index < 100000:
+        #if index < 100000:
+        #    rows.append(i)
+        if index < 215000:
             rows.append(i)
         else:
             nonPairRows.append(i)
