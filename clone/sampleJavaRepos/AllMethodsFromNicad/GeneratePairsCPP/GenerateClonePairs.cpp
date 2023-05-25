@@ -18,10 +18,39 @@ int main(){
 	std::cout << "There are a total of: " << outputVec.size() << " functions" << std::endl; 
 	auto startTime = chrono::high_resolution_clock::now();
 	GenerateClonePairs(outputVec);
+	GenerateClonePairsLessRAM(outputVec);
 	auto endTime=chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 	std::cout << "Execution time: " << duration.count() << " milliseconds" << std::endl;
 	return 0;
+}
+void GenerateClonePairsLessRAM(vector<int> functionIDs) {
+	vector<int> sampleFuncIDs = getRandomSample(functionIDs, 775000);
+	int myVecSize = sampleFuncIDs.size();
+	std::cout << "start..." << std::endl;
+
+	string filename = "OutputPairs.csv";
+	ofstream file(filename);
+	if (!file) {
+		std::cerr << "failed to open the file." << std::endl;
+		return;
+	}
+
+	file << ",id1, id2, label" << "\n";
+	int index = 0;
+	for (int i = 0; i < myVecSize; i++) {
+		if (i % 10000 == 0) {
+			std::cout << i;
+			std::cout << " out of ";
+			std::cout << myVecSize << std::endl;
+		}
+		for (int j = i + 1; j < myVecSize; j++) {
+			file << index << "," << sampleFuncIDs[i] << "," << sampleFuncIDs[j] << "," << "-1" << "\n";
+			index += 1;
+		}
+	}
+
+	file.close();
 }
 void GenerateClonePairs(vector<int> functionIDs){
 	vector<int> sampleFuncIDs = getRandomSample(functionIDs, 775000);
