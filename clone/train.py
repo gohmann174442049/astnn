@@ -10,6 +10,13 @@ from sklearn.metrics import precision_recall_fscore_support
 warnings.filterwarnings('ignore')
 
 
+def WritePredicts(test_data_t,probability, t):
+    test_data_t["probability"]=probability
+    test_data_t=test_data_t.drop("label", axis=1)
+    test_data_t=test_data_t.drop("code_x", axis=1)
+    test_data_t=test_data_t.drop("code_y", axis=1)
+    test_data_t.to_csv("sampleOutput\\predicts_"+str(t)+".csv")
+
 def get_batch(dataset, idx, bs):
     tmp = dataset.iloc[idx: idx+bs]
     x1, x2, labels = [], [], []
@@ -39,10 +46,9 @@ if __name__ == '__main__':
     if lang == 'java':
         categories = 5
     print("Train for ", str.upper(lang))
-    #train_data = pd.read_pickle(root+lang+'/test/BCB_Blocks/blocks.pkl').sample(frac=1)
     train_data = pd.read_pickle(root+lang+'/train/blocks.pkl').sample(frac=1)
+    test_data = pd.read_pickle(root+lang+'/test/blocks.pkl').sample(frac=1)
 
-    test_data = pd.read_pickle(root+lang+'/test/blocks.pkl').sample(n=1000000)
     word2vec = Word2Vec.load(root+lang+"/train/embedding/node_w2v_128").wv
     MAX_TOKENS = word2vec.syn0.shape[0]
     EMBEDDING_DIM = word2vec.syn0.shape[1]
@@ -52,8 +58,8 @@ if __name__ == '__main__':
     HIDDEN_DIM = 100
     ENCODE_DIM = 128
     LABELS = 1
-    EPOCHS = 5
-    BATCH_SIZE = 32
+    EPOCHS = 15
+    BATCH_SIZE = 64
     USE_GPU = True
 
     model = BatchProgramCC(EMBEDDING_DIM,HIDDEN_DIM,MAX_TOKENS+1,ENCODE_DIM,LABELS,BATCH_SIZE,
@@ -63,6 +69,14 @@ if __name__ == '__main__':
 
     parameters = model.parameters()
     optimizer = torch.optim.Adamax(parameters)
+
+    #num_samples_class1 = 350
+    #num_samples_class2 = 999650
+    #weight_class1 = 1.0 / num_samples_class1
+    #weight_class2 = 1.0 / num_samples_class2
+    #class_weights = torch.tensor([weight_class1, weight_class2])
+    #loss_function = torch.nn.BCELoss(weight=class_weights)
+    
     loss_function = torch.nn.BCELoss()
 
     print(train_data)
@@ -70,6 +84,7 @@ if __name__ == '__main__':
     print('Start training...')
     #for t in range(1, categories+1):
     for t in range(1, categories+1):
+        print("clone type:", t)
         # subset the data to train for each given type on bigclonebench
         train_data_t = train_data[train_data['label'].isin([t, 0])]
         train_data_t.loc[train_data_t['label'] > 0, 'label'] = 1
@@ -104,10 +119,14 @@ if __name__ == '__main__':
                 output = model(train1_inputs, train2_inputs)
 
                 loss = loss_function(output, Variable(train_labels))
+                #print("training loss:", loss)
                 loss.backward()
                 optimizer.step()
         print("Testing-%d..."%t)
         # testing procedure
+        #probablity is used to output the neural network predicts to assess precision and recall
+        #remove this metric when NN is tuned and being run on the full set of data.
+        probability=[]
         predicts = []
         trues = []
         total_loss = 0.0
@@ -126,16 +145,18 @@ if __name__ == '__main__':
             output = model(test1_inputs, test2_inputs)
 
             loss = loss_function(output, Variable(test_labels))
-
             # calc testing acc
-            predicted = (output.data > 0.5).cpu().numpy()
+            predicted = (output.data > 0.95).cpu().numpy()
             #notEncodedData= (output.data > 0.5)   
             predicts.extend(predicted)
-            #print(notEncodedData)
+            #append data for output
+            probability.extend((output.data).cpu().numpy())
+
             trues.extend(test_labels.cpu().numpy())
             total += len(test_labels)
             total_loss += loss.item() * len(test_labels)
         assert len(test_data_t)==len(predicts)
+        WritePredicts(test_data_t, probability, t)
         idPairs=[]
         count=0
         for row in test_data_t.itertuples():
