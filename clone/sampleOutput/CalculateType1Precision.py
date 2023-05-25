@@ -1,6 +1,8 @@
 import csv
 import sys
 pairRows=[]
+def ListToDict(l):
+    return dict(l)
 def SetFieldSizeLimit():
     maxInt = sys.maxsize
 
@@ -30,18 +32,21 @@ with open("../data/java/merged_dataset_funcs_all.tsv", 'r', encoding='latin-1') 
     data=csv.reader(inputFuncs, delimiter='\t', quotechar="\"")
     for i in data:
         functionRows.append(i)
-#for i in range(0,10):
-#print(functionRows[i])
+
+functionRowsDict=ListToDict(functionRows)
 truePositive=0
 falsePositive=0
 counter=0
 for pair in pairRows:
-    if counter % 100==0:
+    if counter % 500==0:
         print(counter)
     counter+=1
     splitPair=pair.split(",")
     function1=None
     function2=None
+    function1=functionRowsDict[splitPair[0]]
+    function2=functionRowsDict[splitPair[1]]
+    '''
     for check in functionRows:
         if int(check[0]) == int(splitPair[0]):
             function1=check[1]
@@ -51,11 +56,12 @@ for pair in pairRows:
             break
     else:
         raise Warning("not found!")
+    '''
     if function1 == function2:
         truePositive +=1
     else:
         falsePositive+=1
-print(truePositive)
-print(falsePositive)
+print("true positives:", truePositive)
+print("false positives:", falsePositive)
 print(truePositive/(truePositive+falsePositive))
         
